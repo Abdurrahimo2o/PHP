@@ -2,8 +2,8 @@
 
 namespace Core;
 
-use Core\Middleware\Guest;
 use Core\Middleware\Auth;
+use Core\Middleware\Guest;
 use Core\Middleware\Middleware;
 
 class Router
@@ -18,6 +18,7 @@ class Router
             'method' => $method,
             'middleware' => null
         ];
+
         return $this;
     }
 
@@ -56,12 +57,8 @@ class Router
     public function route($uri, $method)
     {
         foreach ($this->routes as $route) {
-
             if ($route['uri'] === $uri && $route['method'] === strtoupper($method)) {
-                if($route['middleware']) {
-                    $middleware = Middleware::MAP[$route['middleware']];
-                    (new $middleware)->handle();
-                }
+                Middleware::resolve($route['middleware']);
 
                 return require base_path($route['controller']);
             }
